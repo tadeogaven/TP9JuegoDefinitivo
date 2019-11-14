@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import org.cocos2d.actions.interval.IntervalAction;
+import org.cocos2d.actions.interval.JumpTo;
 import org.cocos2d.actions.interval.MoveBy;
 import org.cocos2d.actions.interval.MoveTo;
 import org.cocos2d.actions.interval.ScaleBy;
@@ -203,14 +204,16 @@ public class Juego {
         }
 
         public void detectarColisiones(float _) {
+            while (_Avatar.getPositionY() == _Pantalla.getHeight()) {
             if (IntereseccionEntreSprites(_Avatar, _Plataforma)) {
-                Log.d("Eskere", "MATEO GOL!!!!!!!");
+                Log.d("Eskere", "COLISIÓN");
                 float AvatarParaArribax,AvatarParaArribay;
-                AvatarParaArribax=_Plataforma.getPositionX();
-                AvatarParaArribay=_Plataforma.getPositionY();
-
-
+                AvatarParaArribax=_Avatar.getPositionX();
+                AvatarParaArribay=_Avatar.getPositionY();
                 _Avatar.setPosition(AvatarParaArribax,AvatarParaArribay+10);
+                _Avatar.setPosition(AvatarParaArribax,AvatarParaArribay-3);
+
+              }
             }
         }
 
