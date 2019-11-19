@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import org.cocos2d.actions.interval.IntervalAction;
+import org.cocos2d.actions.interval.JumpBy;
 import org.cocos2d.actions.interval.JumpTo;
 import org.cocos2d.actions.interval.MoveBy;
 import org.cocos2d.actions.interval.MoveTo;
@@ -28,8 +29,8 @@ public class Juego {
     Sprite _FlechaIz;
     Sprite _FlechaDe;
 
-    public Juego(CCGLSurfaceView vistaAUsar){
-        _JuegoVista=vistaAUsar;
+    public Juego(CCGLSurfaceView vistaAUsar) {
+        _JuegoVista = vistaAUsar;
     }
 
     public void InicioJuego() {
@@ -40,27 +41,27 @@ public class Juego {
         _Pantalla = Director.sharedDirector().displaySize();
         Log.d("InicioJuego", "Pantalla - Ancho: " + _Pantalla.getWidth() + " - Alto: " + _Pantalla.getHeight());
 
-        Log.d("InicioJuego","Declaro e instancio la escena");
+        Log.d("InicioJuego", "Declaro e instancio la escena");
         Scene escenaAUsar;
-        escenaAUsar=EscenaComienzo();
+        escenaAUsar = EscenaComienzo();
 
-        Log.d("InicioJuego","Le digo al director que inicie la escena");
+        Log.d("InicioJuego", "Le digo al director que inicie la escena");
         Director.sharedDirector().runWithScene(escenaAUsar);
     }
 
-    private Scene EscenaComienzo(){
-        Log.d("EscenaComienzo","Comienza");
+    private Scene EscenaComienzo() {
+        Log.d("EscenaComienzo", "Comienza");
         Scene escenaADevolver;
-        escenaADevolver=Scene.node();
+        escenaADevolver = Scene.node();
 
         capaJuego capa = new capaJuego();
         escenaADevolver.addChild(capa);
 
-        Log.d("EscenaComienzo","Devuelvo la escena creada");
+        Log.d("EscenaComienzo", "Devuelvo la escena creada");
         return escenaADevolver;
     }
 
-    class capaJuego extends Layer{
+    class capaJuego extends Layer {
         public capaJuego() {
             Log.d("CapaJuego", "Comienza el constructor");
 
@@ -77,67 +78,67 @@ public class Juego {
             setIsTouchEnabled(true);
 
             Log.d("CapaJuego", "Inicio el verificador de colisiones");
-            super.schedule("detectarColisiones", (float) (1.0 / 60.0));
+            super.schedule("detectarColisiones", (float) (1 / 60.0));
             detectarColisiones(0);
         }
 
-        void ponerImagenFondo(){
+        void ponerImagenFondo() {
             Sprite imagenFondo;
             Log.d("Poner Imagen", "Asigno imagen grafica al Sprite del avatar");
-            imagenFondo=Sprite.sprite("Fondo.jpg");
+            imagenFondo = Sprite.sprite("Fondo.jpg");
 
             Log.d("Poner Imagen", "Lo ubico");
-            imagenFondo.setPosition(_Pantalla.getWidth()/2,_Pantalla.getHeight()/2);
+            imagenFondo.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() / 2);
 
 
             float factorAncho, factorAlto;
-            factorAncho=_Pantalla.getWidth()/imagenFondo.getWidth();
-            factorAlto=_Pantalla.getHeight()/imagenFondo.getHeight();
+            factorAncho = _Pantalla.getWidth() / imagenFondo.getWidth();
+            factorAlto = _Pantalla.getHeight() / imagenFondo.getHeight();
             Log.d("Poner Imagen", "Lo escalo");
-            imagenFondo.runAction(ScaleBy.action(0.01f,3,3));
+            imagenFondo.runAction(ScaleBy.action(0.01f, 3, 3));
 
             Log.d("Poner Imagen", "Lo agrego a la capa");
             super.addChild(imagenFondo);
 
         }
 
-        void ponerAvatar(){
+        void ponerAvatar() {
             Log.d("Poner Jugador", "Asigno imagen grafica al Sprite del avatar");
-            _Avatar=Sprite.sprite("Avatar.png");
+            _Avatar = Sprite.sprite("Avatar.png");
 
             Log.d("Poner Jugador", "Comienzo a ubicar al avatar");
             CCPoint posicionInicialAvatar;
-            posicionInicialAvatar=new CCPoint();
-            posicionInicialAvatar.x=_Pantalla.getWidth()/2;
-            posicionInicialAvatar.y=_Pantalla.getHeight();
-            _Avatar.setPosition(posicionInicialAvatar.x,posicionInicialAvatar.y);
+            posicionInicialAvatar = new CCPoint();
+            posicionInicialAvatar.x = _Pantalla.getWidth() / 2;
+            posicionInicialAvatar.y = _Pantalla.getHeight();
+            _Avatar.setPosition(posicionInicialAvatar.x, posicionInicialAvatar.y);
 
 
             CCPoint posicionFinalAvatar;
-            posicionFinalAvatar=new CCPoint();
-            posicionFinalAvatar.x=posicionInicialAvatar.x;
-            posicionFinalAvatar.y=0;
+            posicionFinalAvatar = new CCPoint();
+            posicionFinalAvatar.x = posicionInicialAvatar.x;
+            posicionFinalAvatar.y = 0;
 
-             Log.d("Poner avatar","Inicio el movimiento");
-            _Avatar.runAction(MoveTo.action(3,posicionFinalAvatar.x,posicionFinalAvatar.y));
+            Log.d("Poner avatar", "Inicio el movimiento");
+            _Avatar.runAction(MoveTo.action(3, posicionFinalAvatar.x, posicionFinalAvatar.y));
 
 
-            Log.d("Poner Jugador","Lo agrego a la capa");
+            Log.d("Poner Jugador", "Lo agrego a la capa");
             super.addChild(_Avatar);
         }
 
-        void ponerPlataforma(){
-            Log.d("Poner plataforma","Voy a armar el Sprite de la plataforma");
-            _Plataforma=Sprite.sprite("Plataforma.png");
+        void ponerPlataforma() {
+            Log.d("Poner plataforma", "Voy a armar el Sprite de la plataforma");
+            _Plataforma = Sprite.sprite("Plataforma.png");
 
-            Log.d("Poner plataforma","Determino posicion inical");
+            Log.d("Poner plataforma", "Determino posicion inical");
             CCPoint posicionInicialPlataforma;
             float alturaPlataforma;
-            alturaPlataforma=_Plataforma.getHeight();
-            posicionInicialPlataforma=new CCPoint();
+            alturaPlataforma = _Plataforma.getHeight();
+            posicionInicialPlataforma = new CCPoint();
 
-            posicionInicialPlataforma.x=_Pantalla.getWidth()/2;
-            posicionInicialPlataforma.y=_Pantalla.getHeight()/2;
+            posicionInicialPlataforma.x = _Pantalla.getWidth() / 2;
+            posicionInicialPlataforma.y = _Pantalla.getHeight() / 2;
 
             Log.d("PonerPlataforma", "Determino posicion al azar");
             /*Random generadorAlAzar;
@@ -148,12 +149,12 @@ public class Juego {
             posicionInicialPlataforma.x += anchoPlataforma / 2;
             */
 
-            Log.d("Poner plataforma","Ubico el Sprite");
-            _Plataforma.setPosition(posicionInicialPlataforma.x,posicionInicialPlataforma.y);
+            Log.d("Poner plataforma", "Ubico el Sprite");
+            _Plataforma.setPosition(posicionInicialPlataforma.x, posicionInicialPlataforma.y);
 
 
-            Log.d("Poner plataforma","Lo agrego a la capa");
-            super.addChild(_Plataforma,7);
+            Log.d("Poner plataforma", "Lo agrego a la capa");
+            super.addChild(_Plataforma, 7);
 
 
         }
@@ -163,91 +164,103 @@ public class Juego {
 
             Float Sp1Arriba, Sp1Abajo, Sp1Derecha, Sp1Izquierda, Sp2Arriba, Sp2Abajo, Sp2Derecha, Sp2Izquierda;
 
-            Sp1Arriba=Sprite1.getPositionY() + Sprite1.getHeight()/2;
-            Sp1Abajo=Sprite1.getPositionY() - Sprite1.getHeight()/2;
-            Sp1Derecha=Sprite1.getPositionX() + Sprite1.getWidth()/2;
-            Sp1Izquierda=Sprite1.getPositionX() - Sprite1.getWidth()/2;
-            Sp2Arriba=Sprite2.getPositionY() + Sprite2.getHeight()/2;
-            Sp2Abajo=Sprite2.getPositionY() - Sprite2.getHeight()/2;
-            Sp2Derecha=Sprite2.getPositionX() + Sprite2.getWidth()/2;
-            Sp2Izquierda=Sprite2.getPositionX() - Sprite2.getWidth()/2;
+            Sp1Arriba = Sprite1.getPositionY() + Sprite1.getHeight() / 2;
+            Sp1Abajo = Sprite1.getPositionY() - Sprite1.getHeight() / 2;
+            Sp1Derecha = Sprite1.getPositionX() + Sprite1.getWidth() / 2;
+            Sp1Izquierda = Sprite1.getPositionX() - Sprite1.getWidth() / 2;
+            Sp2Arriba = Sprite2.getPositionY() + Sprite2.getHeight() / 2;
+            Sp2Abajo = Sprite2.getPositionY() - Sprite2.getHeight() / 2;
+            Sp2Derecha = Sprite2.getPositionX() + Sprite2.getWidth() / 2;
+            Sp2Izquierda = Sprite2.getPositionX() - Sprite2.getWidth() / 2;
 
 
 //Me fijo si el vértice superior derecho de Sp1 está dentro de Sp2
-            if (Sp1Arriba>=Sp2Abajo && Sp1Arriba<=Sp2Arriba &&
-            Sp1Derecha>=Sp2Izquierda && Sp1Derecha<=Sp2Derecha) {
-                HayInterseccion=true;
+            if (Sp1Arriba >= Sp2Abajo && Sp1Arriba <= Sp2Arriba &&
+                    Sp1Derecha >= Sp2Izquierda && Sp1Derecha <= Sp2Derecha) {
+                HayInterseccion = true;
             }
 //Me fijo si el vértice superior izquierdo de Sp1 está dentro de Sp2
-            if (Sp1Arriba>=Sp2Abajo && Sp1Arriba<=Sp2Arriba &&
-            Sp1Izquierda>=Sp2Izquierda && Sp1Izquierda<=Sp2Derecha) {
-                HayInterseccion=true;
+            if (Sp1Arriba >= Sp2Abajo && Sp1Arriba <= Sp2Arriba &&
+                    Sp1Izquierda >= Sp2Izquierda && Sp1Izquierda <= Sp2Derecha) {
+                HayInterseccion = true;
             }
 //Me fijo si el vértice inferior derecho de Sp1 está dentro de Sp2
-            if (Sp1Abajo>=Sp2Abajo && Sp1Abajo<=Sp2Arriba &&
-            Sp1Derecha>=Sp2Izquierda && Sp1Derecha<=Sp2Derecha) {
-                HayInterseccion=true;
+            if (Sp1Abajo >= Sp2Abajo && Sp1Abajo <= Sp2Arriba &&
+                    Sp1Derecha >= Sp2Izquierda && Sp1Derecha <= Sp2Derecha) {
+                HayInterseccion = true;
 
             }
 //Me fijo si el vértice inferior izquierdo de Sp1 está dentro de Sp2
-            if (Sp1Abajo>=Sp2Abajo && Sp1Abajo<=Sp2Arriba &&
-            Sp1Izquierda>=Sp2Izquierda && Sp1Izquierda<=Sp2Derecha) {
-                HayInterseccion=true;
+            if (Sp1Abajo >= Sp2Abajo && Sp1Abajo <= Sp2Arriba &&
+                    Sp1Izquierda >= Sp2Izquierda && Sp1Izquierda <= Sp2Derecha) {
+                HayInterseccion = true;
             }
 //Me fijo si el vértice superior derecho de Sp2 está dentro de Sp1
-            if (Sp2Arriba>=Sp1Abajo && Sp2Arriba<=Sp1Arriba &&
-            Sp2Derecha>=Sp1Izquierda && Sp2Derecha<=Sp1Derecha) {
-                HayInterseccion=true;
+            if (Sp2Arriba >= Sp1Abajo && Sp2Arriba <= Sp1Arriba &&
+                    Sp2Derecha >= Sp1Izquierda && Sp2Derecha <= Sp1Derecha) {
+                HayInterseccion = true;
             }
 
-            return  HayInterseccion;
+            return HayInterseccion;
         }
+
+        boolean salta = false;
+        Random random = new Random();
 
         public void detectarColisiones(float _) {
-            while (_Avatar.getPositionY() == _Pantalla.getHeight()) {
+
             if (IntereseccionEntreSprites(_Avatar, _Plataforma)) {
-                Log.d("Eskere", "COLISIÓN");
-                float AvatarParaArribax,AvatarParaArribay;
-                AvatarParaArribax=_Avatar.getPositionX();
-                AvatarParaArribay=_Avatar.getPositionY();
-                _Avatar.setPosition(AvatarParaArribax,AvatarParaArribay+10);
-                _Avatar.setPosition(AvatarParaArribax,AvatarParaArribay-3);
 
-              }
+                    Log.d("Eskere", "COLISIÓN");
+                    float RandomPos = random.nextFloat()*_Pantalla.width;
+
+                    Log.d("Eskere", "Saltando a: "+RandomPos);
+                    _Avatar.runAction(JumpBy.action(1, RandomPos, 10f, 0, 1));
+                    if(_Avatar.getPositionX()== _Pantalla.getWidth()){
+                        _Avatar.runAction(MoveBy.action(1, _Pantalla.getWidth()/2, 1));
+                    }else if (_Avatar.getPositionX()== _Pantalla.getWidth()/4){
+                        _Avatar.runAction(MoveBy.action(1, _Pantalla.getWidth()/2, 1));
+                    }
+
+            } else {
+                _Avatar.runAction(MoveBy.action(1,0,-800));
             }
+
+
         }
 
         @Override
-        public boolean ccTouchesBegan(MotionEvent event){
+        public boolean ccTouchesBegan(MotionEvent event) {
             float xTocada, yTocada;
-            xTocada=event.getX();
-            yTocada=_Pantalla.getHeight()-event.getY();
-            Log.d("ControlDeToque","Comienza toque: X:"+xTocada+" - Y: "+ yTocada);
-            moverAvatar(xTocada,yTocada);
+            xTocada = event.getX();
+            yTocada = _Pantalla.getHeight() - event.getY();
+            Log.d("ControlDeToque", "Comienza toque: X:" + xTocada + " - Y: " + yTocada);
+            moverAvatar(xTocada, yTocada);
             return true;
         }
 
         @Override
-        public boolean ccTouchesMoved(MotionEvent event){
+        public boolean ccTouchesMoved(MotionEvent event) {
             float xTocada, yTocada;
-            xTocada=event.getX();
-            yTocada=_Pantalla.getHeight()-event.getY();
-            Log.d("ControlDeToque","Muevo toque: X:"+xTocada+" - Y: "+ yTocada);
-            moverAvatar(xTocada,yTocada);
-            return true;
-        }
-        @Override
-        public boolean ccTouchesEnded(MotionEvent event){
-            float xTocada, yTocada;
-            xTocada=event.getX();
-            yTocada=_Pantalla.getHeight()-event.getY();
-            Log.d("ControlDeToque","Final del toque: X:"+xTocada+" - Y: "+ yTocada);
+            xTocada = event.getX();
+            yTocada = _Pantalla.getHeight() - event.getY();
+            Log.d("ControlDeToque", "Muevo toque: X:" + xTocada + " - Y: " + yTocada);
+            moverAvatar(xTocada, yTocada);
             return true;
         }
 
-        void moverAvatar(float xAMover, float yAMover){
-            Log.d("Mover Avatar ","Me pide que ubique en x: "+ xAMover+" - y "+ yAMover);
-            _Plataforma.setPosition(xAMover,yAMover);
+        @Override
+        public boolean ccTouchesEnded(MotionEvent event) {
+            float xTocada, yTocada;
+            xTocada = event.getX();
+            yTocada = _Pantalla.getHeight() - event.getY();
+            Log.d("ControlDeToque", "Final del toque: X:" + xTocada + " - Y: " + yTocada);
+            return true;
+        }
+
+        void moverAvatar(float xAMover, float yAMover) {
+            Log.d("Mover Avatar ", "Me pide que ubique en x: " + xAMover + " - y " + yAMover);
+            _Plataforma.setPosition(xAMover, yAMover);
         }
     }
 }
