@@ -2,6 +2,7 @@ package com.example.tp9juego;
 
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.Button;
 
 import org.cocos2d.actions.interval.IntervalAction;
 import org.cocos2d.actions.interval.JumpBy;
@@ -11,10 +12,14 @@ import org.cocos2d.actions.interval.MoveTo;
 import org.cocos2d.actions.interval.ScaleBy;
 import org.cocos2d.actions.interval.Sequence;
 import org.cocos2d.layers.Layer;
+import org.cocos2d.menus.Menu;
+import org.cocos2d.menus.MenuItemLabel;
 import org.cocos2d.nodes.Director;
+import org.cocos2d.nodes.Label;
 import org.cocos2d.nodes.Scene;
 import org.cocos2d.nodes.Sprite;
 import org.cocos2d.opengl.CCGLSurfaceView;
+import org.cocos2d.types.CCColor3B;
 import org.cocos2d.types.CCPoint;
 import org.cocos2d.types.CCSize;
 
@@ -28,6 +33,12 @@ public class Juego {
     Sprite _Plataforma;
     Sprite _FlechaIz;
     Sprite _FlechaDe;
+    Label _lblJugar;
+    Label _lblTituloJuego;
+    Label _Puntos;
+    float RandomPos;
+    int puntos = 0;
+    Button Jugar;
 
     public Juego(CCGLSurfaceView vistaAUsar) {
         _JuegoVista = vistaAUsar;
@@ -43,23 +54,101 @@ public class Juego {
 
         Log.d("InicioJuego", "Declaro e instancio la escena");
         Scene escenaAUsar;
-        escenaAUsar = EscenaComienzo();
-
+        escenaAUsar = escenaMenuJuego();
+     /*   Scene Menu;
+        Menu= capaMenu();
+        Director.sharedDirector().runWithScene(Menu);*/
         Log.d("InicioJuego", "Le digo al director que inicie la escena");
         Director.sharedDirector().runWithScene(escenaAUsar);
     }
 
-    private Scene EscenaComienzo() {
-        Log.d("EscenaComienzo", "Comienza");
-        Scene escenaADevolver;
-        escenaADevolver = Scene.node();
+    Scene escenaMenuJuego() {
+        Scene devuelve;
+        devuelve = Scene.node();
+        capaMenu Menu;
+        Menu = new capaMenu();
+        devuelve.addChild(Menu);
 
-        capaJuego capa = new capaJuego();
-        escenaADevolver.addChild(capa);
-
-        Log.d("EscenaComienzo", "Devuelvo la escena creada");
-        return escenaADevolver;
+        return devuelve;
     }
+
+    Scene escenaComienzo() {
+        Scene escenadevuelve;
+        escenadevuelve = Scene.node();
+        capaJuego capa1;
+        capa1 = new capaJuego();
+        escenadevuelve.addChild(capa1);
+        return escenadevuelve;
+
+    }
+
+
+
+    class capaMenu extends Layer {
+
+        public capaMenu() {
+            ponerImagenFondo();
+            ponerMenu();
+            PonerBotonJugar();
+        }
+            void ponerMenu(){
+                _lblTituloJuego = Label.label("Salta Bolita Por favor!", "Verdana", 100);
+                _lblTituloJuego.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() / 2);
+
+                CCColor3B colorPuntos = new CCColor3B(84, -72, 50);
+                _lblTituloJuego.setColor(colorPuntos);
+
+                super.addChild(_lblTituloJuego, -2);
+
+            }
+
+
+
+        void ponerImagenFondo() {
+            Sprite imagenFondo;
+            Log.d("Poner Imagen", "Asigno imagen grafica al Sprite del avatar");
+            imagenFondo = Sprite.sprite("Fondo.jpg");
+
+            Log.d("Poner Imagen", "Lo ubico");
+            imagenFondo.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() / 2);
+
+
+            float factorAncho, factorAlto;
+            factorAncho = _Pantalla.getWidth() / imagenFondo.getWidth();
+            factorAlto = _Pantalla.getHeight() / imagenFondo.getHeight();
+            Log.d("Poner Imagen", "Lo escalo");
+            imagenFondo.runAction(ScaleBy.action(0.01f, 3, 3));
+
+            Log.d("Poner Imagen", "Lo agrego a la capa");
+            super.addChild(imagenFondo);
+
+        }
+
+
+        void PonerBotonJugar() {
+            _lblJugar = Label.label("Jugar", "Boton", 100);
+            CCColor3B colorPuntos;
+            colorPuntos = new CCColor3B(255, 0, 0);
+            _lblJugar.setColor(colorPuntos);
+            MenuItemLabel BotonJugar;
+            BotonJugar = MenuItemLabel.item(_lblJugar, this, "cambioEscenaJuego");
+            Menu menuBotones;
+            menuBotones = Menu.menu(BotonJugar);
+            menuBotones.setPosition(_Pantalla.getWidth() / 2, (_Pantalla.getHeight() / 2 - _lblTituloJuego.getHeight() * 2));
+            super.addChild(menuBotones);
+        }
+
+        public void cambioEscenaJuego() {
+            Log.d("botonJugar", "presionaboton");
+            Scene escena;
+            escena = escenaComienzo();
+            Director.sharedDirector().runWithScene(escena);
+
+        }
+
+    }
+
+
 
     class capaJuego extends Layer {
         public capaJuego() {
@@ -119,12 +208,24 @@ public class Juego {
             posicionFinalAvatar.x = posicionInicialAvatar.x;
             posicionFinalAvatar.y = 0;
 
+            RandomPos = random.nextFloat()*_Pantalla.getWidth() / _Pantalla.getWidth();
+
             Log.d("Poner avatar", "Inicio el movimiento");
-            _Avatar.runAction(MoveTo.action(3, posicionFinalAvatar.x, posicionFinalAvatar.y));
+            _Avatar.runAction(MoveTo.action(6, RandomPos, posicionFinalAvatar.y));
 
 
             Log.d("Poner Jugador", "Lo agrego a la capa");
             super.addChild(_Avatar);
+        }
+
+        void PonerPunto() {
+            _Puntos = Label.label("" + puntos, "", 100);
+            _Puntos.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() - _Puntos.getHeight() / 2);
+            CCColor3B colorPuntos;
+            colorPuntos = new CCColor3B(255, 255, 255);
+            Log.d("puntos", "Tenes " + puntos + " puntos y " + _Puntos.toString());
+            _Puntos.setColor(colorPuntos);
+            super.addChild(_Puntos);
         }
 
         void ponerPlataforma() {
@@ -206,24 +307,35 @@ public class Juego {
 
         boolean salta = false;
         Random random = new Random();
+        CCPoint PosFinal= new CCPoint();
 
         public void detectarColisiones(float _) {
+            PosFinal.y=100000;
+
+
 
             if (IntereseccionEntreSprites(_Avatar, _Plataforma)) {
 
                     Log.d("Eskere", "COLISIÓN");
-                    float RandomPos = random.nextFloat()*_Pantalla.width;
 
-                    Log.d("Eskere", "Saltando a: "+RandomPos);
-                    _Avatar.runAction(JumpBy.action(1, RandomPos, 10f, 0, 1));
-                    if(_Avatar.getPositionX()== _Pantalla.getWidth()){
+                   // Log.d("Eskere", "Saltando a: "+RandomPos);
+
+                    _Avatar.runAction(MoveBy.action(1,RandomPos,PosFinal.y));
+                    Log.d("Pos","la posicion en y del avatar es en " + PosFinal.y);
+                    Log.d("Pos","la posicion en x del avatar es en " + RandomPos);
+
+                    /*if(_Avatar.getPositionX()<= _Pantalla.getWidth()){
                         _Avatar.runAction(MoveBy.action(1, _Pantalla.getWidth()/2, 1));
-                    }else if (_Avatar.getPositionX()== _Pantalla.getWidth()/4){
+                    }else if (_Avatar.getPositionX()<= _Pantalla.getWidth()/4){
                         _Avatar.runAction(MoveBy.action(1, _Pantalla.getWidth()/2, 1));
-                    }
+                    }*/
 
             } else {
-                _Avatar.runAction(MoveBy.action(1,0,-800));
+                _Avatar.runAction(MoveBy.action(0.25f,0,-800));
+
+                if(_Avatar.getPositionY()<=0){
+                    Log.d("Perder", "perdio");
+                }
             }
 
 
@@ -264,5 +376,6 @@ public class Juego {
         }
     }
 }
+
 
 
