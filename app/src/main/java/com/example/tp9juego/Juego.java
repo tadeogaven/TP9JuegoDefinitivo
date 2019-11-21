@@ -41,6 +41,7 @@ public class Juego {
     int puntos = 0;
     ArrayList<Sprite> arrayAvatar;
     Button Jugar;
+    Float _Timer = 3.0f;
 
     public Juego(CCGLSurfaceView vistaAUsar) {
         _JuegoVista = vistaAUsar;
@@ -205,7 +206,7 @@ public class Juego {
 
             Log.d("CapaJuego", "Ubico al avatar en posicion inicial");
             arrayAvatar=new ArrayList<Sprite>();
-            super.schedule("ponerAvatar", 1.0f);
+            super.schedule("ponerAvatar", _Timer);
             ponerAvatar(10);
 
 
@@ -235,15 +236,9 @@ public class Juego {
 
         }
 
-       public void ponerAvatar(float _) {
+       public void ponerAvatar(float _Timer) {
 
-           if(puntos >= 10){
-               _=_ - 5.0f;
-           }
 
-           if(puntos >= 20){
-               _=_ - 1.0f;
-           }
 
             Log.d("Poner Jugador", "Asigno imagen grafica al Sprite del avatar");
             Sprite _Avatar = Sprite.sprite("Avatar.png");
