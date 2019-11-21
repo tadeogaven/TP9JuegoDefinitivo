@@ -1,5 +1,6 @@
 package com.example.tp9juego;
 
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
@@ -41,7 +42,8 @@ public class Juego {
     int puntos = 0;
     ArrayList<Sprite> arrayAvatar;
     Button Jugar;
-    Float _Timer = 3.0f;
+    Float _Timer = 1.0f;
+    MediaPlayer _musicaDeFondo;
 
     public Juego(CCGLSurfaceView vistaAUsar) {
         _JuegoVista = vistaAUsar;
@@ -49,7 +51,7 @@ public class Juego {
 
 
     void PonerMusicaDeFondo(){
-        _musicaDeFondo=MediaPlayer.create(Director.shareDirector().getActivity(),R.raw.Duki - GOTEO _ LETRA);
+        _musicaDeFondo= MediaPlayer.create(Director.sharedDirector().getActivity(),R.raw.musica);
         _musicaDeFondo.setLooping(true);
         _musicaDeFondo.start();
     }
@@ -386,15 +388,19 @@ public class Juego {
 
                     if(puntos > 10 ){
                         _Timer = _Timer - 0.5f;
+                        Log.d("Timer","puntos"+ puntos + _Timer.toString());
                     }
                     if(puntos > 15 ){
                         _Timer = _Timer - 1;
+                        Log.d("Timer","puntos"+ puntos + _Timer.toString());
                     }
                     if(puntos > 20 ){
                         _Timer = _Timer - 1.5f;
+                        Log.d("Timer","puntos"+ puntos + _Timer.toString());
                     }
                     if(puntos > 35 ){
                         _Timer = _Timer - 2;
+                        Log.d("Timer","puntos"+ puntos + _Timer.toString());
                     }
 
                     Log.d("Pos", "la posicion en x del avatar es en " + _Avatar.getPositionX());
