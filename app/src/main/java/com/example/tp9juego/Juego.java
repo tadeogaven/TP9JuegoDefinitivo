@@ -23,13 +23,14 @@ import org.cocos2d.types.CCColor3B;
 import org.cocos2d.types.CCPoint;
 import org.cocos2d.types.CCSize;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Juego {
     CCGLSurfaceView _JuegoVista;
     CCSize _Pantalla;
-    Sprite _Avatar;
+    //Sprite _Avatar;
     Sprite _Plataforma;
     Sprite _FlechaIz;
     Sprite _FlechaDe;
@@ -38,6 +39,7 @@ public class Juego {
     Label _Puntos;
     float RandomPos;
     int puntos = 0;
+    ArrayList<Sprite> arrayAvatar;
     Button Jugar;
 
     public Juego(CCGLSurfaceView vistaAUsar) {
@@ -77,6 +79,16 @@ public class Juego {
         escenadevuelve = Scene.node();
         capaJuego capa1;
         capa1 = new capaJuego();
+        escenadevuelve.addChild(capa1);
+        return escenadevuelve;
+
+    }
+
+    Scene escenaFinal(){
+        Scene escenadevuelve;
+        escenadevuelve = Scene.node();
+        capaFinal capa1;
+        capa1 = new capaFinal();
         escenadevuelve.addChild(capa1);
         return escenadevuelve;
 
@@ -148,23 +160,55 @@ public class Juego {
 
     }
 
+    class capaFinal extends Layer{
+        public capaFinal(){
+                ponerPantallaFinal();
+        }
+
+        void ponerPantallaFinal(){
+            Sprite imagenFondo;
+            Log.d("Poner Imagen", "Asigno imagen grafica al Sprite del avatar");
+            imagenFondo = Sprite.sprite("FondoFinal.jpg");
+
+            Log.d("Poner Imagen", "Lo ubico");
+            imagenFondo.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() / 2);
+
+
+            float factorAncho, factorAlto;
+            factorAncho = _Pantalla.getWidth() / imagenFondo.getWidth();
+            factorAlto = _Pantalla.getHeight() / imagenFondo.getHeight();
+            Log.d("Poner Imagen", "Lo escalo");
+            imagenFondo.runAction(ScaleBy.action(0.01f, 3, 3));
+
+            Log.d("Poner Imagen", "Lo agrego a la capa");
+            super.addChild(imagenFondo);
+        }
+    }
+
 
 
     class capaJuego extends Layer {
         public capaJuego() {
+
+            Log.d("CapaJuego", "Habilito el touch");
+            setIsTouchEnabled(true);
+
             Log.d("CapaJuego", "Comienza el constructor");
 
             Log.d("CapaJuego", "Ubico al fondo en posicion inicial");
             ponerImagenFondo();
 
-            Log.d("CapaJuego", "Ubico al avatar en posicion inicial");
-            ponerAvatar();
+            PonerPuntos();
 
             Log.d("CapaJuego", "Ubico a la plataforma en posicion inicial");
             ponerPlataforma();
 
-            Log.d("CapaJuego", "Habilito el touch");
-            setIsTouchEnabled(true);
+            Log.d("CapaJuego", "Ubico al avatar en posicion inicial");
+            arrayAvatar=new ArrayList<Sprite>();
+            super.schedule("ponerAvatar", 1.0f);
+            ponerAvatar(10);
+
+
 
             Log.d("CapaJuego", "Inicio el verificador de colisiones");
             super.schedule("detectarColisiones", (float) (1 / 60.0));
@@ -191,14 +235,30 @@ public class Juego {
 
         }
 
-        void ponerAvatar() {
+       public void ponerAvatar(float _) {
+
+           if(puntos >= 10){
+               _=_ - 5.0f;
+           }
+
+           if(puntos >= 20){
+               _=_ - 1.0f;
+           }
+
             Log.d("Poner Jugador", "Asigno imagen grafica al Sprite del avatar");
-            _Avatar = Sprite.sprite("Avatar.png");
+            Sprite _Avatar = Sprite.sprite("Avatar.png");
 
             Log.d("Poner Jugador", "Comienzo a ubicar al avatar");
             CCPoint posicionInicialAvatar;
             posicionInicialAvatar = new CCPoint();
-            posicionInicialAvatar.x = _Pantalla.getWidth() / 2;
+
+            Random random;
+           random =new Random();
+            float anchoAvatar;
+            anchoAvatar = _Avatar.getWidth();
+
+            posicionInicialAvatar.x = random.nextInt((int) (_Pantalla.getWidth() -anchoAvatar));
+            posicionInicialAvatar.x += anchoAvatar/2;
             posicionInicialAvatar.y = _Pantalla.getHeight();
             _Avatar.setPosition(posicionInicialAvatar.x, posicionInicialAvatar.y);
 
@@ -208,17 +268,19 @@ public class Juego {
             posicionFinalAvatar.x = posicionInicialAvatar.x;
             posicionFinalAvatar.y = 0;
 
-            RandomPos = random.nextFloat()*_Pantalla.getWidth() / _Pantalla.getWidth();
-
             Log.d("Poner avatar", "Inicio el movimiento");
-            _Avatar.runAction(MoveTo.action(6, RandomPos, posicionFinalAvatar.y));
-
+            _Avatar.runAction(MoveTo.action(4, posicionFinalAvatar.x, posicionFinalAvatar.y));
 
             Log.d("Poner Jugador", "Lo agrego a la capa");
-            super.addChild(_Avatar);
-        }
+            arrayAvatar.add(_Avatar);
+            Log.d("lista","hay "+arrayAvatar.size()+" pelotas");
+            super.addChild(_Avatar,10);
 
-        void PonerPunto() {
+
+
+       }
+
+        void PonerPuntos() {
             _Puntos = Label.label("" + puntos, "", 100);
             _Puntos.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() - _Puntos.getHeight() / 2);
             CCColor3B colorPuntos;
@@ -242,13 +304,13 @@ public class Juego {
             posicionInicialPlataforma.y = _Pantalla.getHeight() / 2;
 
             Log.d("PonerPlataforma", "Determino posicion al azar");
-            /*Random generadorAlAzar;
+            Random generadorAlAzar;
             generadorAlAzar = new Random();
             float anchoPlataforma;
             anchoPlataforma = _Plataforma.getWidth();
             posicionInicialPlataforma.x = generadorAlAzar.nextInt((int) (_Pantalla.getWidth() - anchoPlataforma));
             posicionInicialPlataforma.x += anchoPlataforma / 2;
-            */
+
 
             Log.d("Poner plataforma", "Ubico el Sprite");
             _Plataforma.setPosition(posicionInicialPlataforma.x, posicionInicialPlataforma.y);
@@ -305,43 +367,41 @@ public class Juego {
             return HayInterseccion;
         }
 
-        boolean salta = false;
-        Random random = new Random();
+
         CCPoint PosFinal= new CCPoint();
 
         public void detectarColisiones(float _) {
-            PosFinal.y=100000;
+
+                for (Sprite _Avatar : arrayAvatar) {
 
 
 
-            if (IntereseccionEntreSprites(_Avatar, _Plataforma)) {
-
+                if (IntereseccionEntreSprites(_Avatar, _Plataforma)) {
                     Log.d("Eskere", "COLISIÓN");
+                    puntos++;
+                    _Puntos.setString("" + puntos);
 
-                   // Log.d("Eskere", "Saltando a: "+RandomPos);
+                    Log.d("Pos", "la posicion en x del avatar es en " + _Avatar.getPositionX());
 
-                    _Avatar.runAction(MoveBy.action(1,RandomPos,PosFinal.y));
-                    Log.d("Pos","la posicion en y del avatar es en " + PosFinal.y);
-                    Log.d("Pos","la posicion en x del avatar es en " + RandomPos);
+                    super.removeChild(_Avatar, true);
+                    arrayAvatar.remove(_Avatar);
 
-                    /*if(_Avatar.getPositionX()<= _Pantalla.getWidth()){
-                        _Avatar.runAction(MoveBy.action(1, _Pantalla.getWidth()/2, 1));
-                    }else if (_Avatar.getPositionX()<= _Pantalla.getWidth()/4){
-                        _Avatar.runAction(MoveBy.action(1, _Pantalla.getWidth()/2, 1));
-                    }*/
 
-            } else {
-                _Avatar.runAction(MoveBy.action(0.25f,0,-800));
 
-                if(_Avatar.getPositionY()<=0){
-                    Log.d("Perder", "perdio");
-                }
-            }
+                } else {
+                    Log.d("No", "no hay colision");
 
+
+                    if (_Avatar.getPositionY() <= 0) {
+                        Log.d("Perder", "perdio");
+
+
+                    }
+                }}
 
         }
 
-        @Override
+       /* @Override
         public boolean ccTouchesBegan(MotionEvent event) {
             float xTocada, yTocada;
             xTocada = event.getX();
@@ -349,7 +409,7 @@ public class Juego {
             Log.d("ControlDeToque", "Comienza toque: X:" + xTocada + " - Y: " + yTocada);
             moverAvatar(xTocada, yTocada);
             return true;
-        }
+        }*/
 
         @Override
         public boolean ccTouchesMoved(MotionEvent event) {
