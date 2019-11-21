@@ -47,6 +47,13 @@ public class Juego {
         _JuegoVista = vistaAUsar;
     }
 
+
+    void PonerMusicaDeFondo(){
+        _musicaDeFondo=MediaPlayer.create(Director.shareDirector().getActivity(),R.raw.Duki - GOTEO _ LETRA);
+        _musicaDeFondo.setLooping(true);
+        _musicaDeFondo.start();
+    }
+
     public void InicioJuego() {
 
         Log.d("InicioJuego", "ARRANCA!");
@@ -236,7 +243,8 @@ public class Juego {
 
         }
 
-       public void ponerAvatar(float _Timer) {
+       public void ponerAvatar(float Timer) {
+
 
 
 
@@ -376,6 +384,19 @@ public class Juego {
                     puntos++;
                     _Puntos.setString("" + puntos);
 
+                    if(puntos > 10 ){
+                        _Timer = _Timer - 0.5f;
+                    }
+                    if(puntos > 15 ){
+                        _Timer = _Timer - 1;
+                    }
+                    if(puntos > 20 ){
+                        _Timer = _Timer - 1.5f;
+                    }
+                    if(puntos > 35 ){
+                        _Timer = _Timer - 2;
+                    }
+
                     Log.d("Pos", "la posicion en x del avatar es en " + _Avatar.getPositionX());
 
                     super.removeChild(_Avatar, true);
@@ -389,6 +410,9 @@ public class Juego {
 
                     if (_Avatar.getPositionY() <= 0) {
                         Log.d("Perder", "perdio");
+                        Scene escenaAusar;
+                        escenaAusar =escenaFinal();
+                        Director.sharedDirector().replaceScene(escenaAusar);
 
 
                     }
@@ -396,7 +420,7 @@ public class Juego {
 
         }
 
-       /* @Override
+       @Override
         public boolean ccTouchesBegan(MotionEvent event) {
             float xTocada, yTocada;
             xTocada = event.getX();
@@ -404,7 +428,7 @@ public class Juego {
             Log.d("ControlDeToque", "Comienza toque: X:" + xTocada + " - Y: " + yTocada);
             moverAvatar(xTocada, yTocada);
             return true;
-        }*/
+        }
 
         @Override
         public boolean ccTouchesMoved(MotionEvent event) {
