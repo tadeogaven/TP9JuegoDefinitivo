@@ -31,18 +31,14 @@ import java.util.Random;
 public class Juego {
     CCGLSurfaceView _JuegoVista;
     CCSize _Pantalla;
-    //Sprite _Avatar;
     Sprite _Plataforma;
-    Sprite _FlechaIz;
-    Sprite _FlechaDe;
     Label _lblJugar;
     Label _lblTituloJuego;
     Label _Puntos;
-    float RandomPos;
     int puntos = 0;
     ArrayList<Sprite> arrayAvatar;
-    Button Jugar;
-    Float _Timer = 1.0f;
+    Float _Timer = 2.0f;
+    Float _Velocidad= 2f;
     MediaPlayer _musicaDeFondo;
 
     public Juego(CCGLSurfaceView vistaAUsar) {
@@ -54,9 +50,12 @@ public class Juego {
         _musicaDeFondo= MediaPlayer.create(Director.sharedDirector().getActivity(),R.raw.musica);
         _musicaDeFondo.setLooping(true);
         _musicaDeFondo.start();
+
     }
 
     public void InicioJuego() {
+
+        PonerMusicaDeFondo();
 
         Log.d("InicioJuego", "ARRANCA!");
         Director.sharedDirector().attachInView(_JuegoVista);
@@ -67,9 +66,6 @@ public class Juego {
         Log.d("InicioJuego", "Declaro e instancio la escena");
         Scene escenaAUsar;
         escenaAUsar = escenaMenuJuego();
-     /*   Scene Menu;
-        Menu= capaMenu();
-        Director.sharedDirector().runWithScene(Menu);*/
         Log.d("InicioJuego", "Le digo al director que inicie la escena");
         Director.sharedDirector().runWithScene(escenaAUsar);
     }
@@ -113,14 +109,15 @@ public class Juego {
             ponerMenu();
             PonerBotonJugar();
         }
-            void ponerMenu(){
-                _lblTituloJuego = Label.label("Salta Bolita Por favor!", "Verdana", 100);
-                _lblTituloJuego.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() / 2);
 
-                CCColor3B colorPuntos = new CCColor3B(84, -72, 50);
+            void ponerMenu(){
+                _lblTituloJuego = Label.label("Catch The Ball!", "Verdana", 120);
+                _lblTituloJuego.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() / 2 - _lblTituloJuego.getHeight() + 200);
+
+                CCColor3B colorPuntos = new CCColor3B(255,255,255);
                 _lblTituloJuego.setColor(colorPuntos);
 
-                super.addChild(_lblTituloJuego, -2);
+                super.addChild(_lblTituloJuego);
 
             }
 
@@ -173,6 +170,8 @@ public class Juego {
     class capaFinal extends Layer{
         public capaFinal(){
                 ponerPantallaFinal();
+                PonerPuntos();
+                PonerBotonJugarDeNuevo();
         }
 
         void ponerPantallaFinal(){
@@ -192,6 +191,36 @@ public class Juego {
 
             Log.d("Poner Imagen", "Lo agrego a la capa");
             super.addChild(imagenFondo);
+        }
+        void PonerBotonJugarDeNuevo() {
+            _lblJugar = Label.label("Jugar De Nuevo", "Boton", 100);
+            CCColor3B colorPuntos;
+            colorPuntos = new CCColor3B(255, 0, 0);
+            _lblJugar.setColor(colorPuntos);
+            MenuItemLabel BotonJugar;
+            BotonJugar = MenuItemLabel.item(_lblJugar, this, "cambioEscenaJuegoPerder");
+            Menu menuBotones;
+            menuBotones = Menu.menu(BotonJugar);
+            menuBotones.setPosition(_Pantalla.getWidth() / 2, (_Pantalla.getHeight() / 2 - _lblTituloJuego.getHeight() * 2));
+            super.addChild(menuBotones);
+            puntos=0;
+        }
+
+        public void cambioEscenaJuegoPerder() {
+            Log.d("botonJugarDeNuevo", "presionaboton");
+            Scene escena;
+            escena = escenaComienzo();
+            Director.sharedDirector().runWithScene(escena);
+
+        }
+        void PonerPuntos() {
+            _Puntos = Label.label("Tu puntaje fue de " + puntos, "", 100);
+            _Puntos.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() - _Puntos.getHeight() / 2);
+            CCColor3B colorPuntos;
+            colorPuntos = new CCColor3B(255, 255, 255);
+            Log.d("puntos", "Tenes " + puntos + " puntos y " + _Puntos.toString());
+            _Puntos.setColor(colorPuntos);
+            super.addChild(_Puntos);
         }
     }
 
@@ -215,7 +244,7 @@ public class Juego {
 
             Log.d("CapaJuego", "Ubico al avatar en posicion inicial");
             arrayAvatar=new ArrayList<Sprite>();
-            super.schedule("ponerAvatar", _Timer);
+            super.schedule("ponerAvatar", 1f);
             ponerAvatar(10);
 
 
@@ -247,9 +276,6 @@ public class Juego {
 
        public void ponerAvatar(float Timer) {
 
-
-
-
             Log.d("Poner Jugador", "Asigno imagen grafica al Sprite del avatar");
             Sprite _Avatar = Sprite.sprite("Avatar.png");
 
@@ -274,7 +300,7 @@ public class Juego {
             posicionFinalAvatar.y = 0;
 
             Log.d("Poner avatar", "Inicio el movimiento");
-            _Avatar.runAction(MoveTo.action(4, posicionFinalAvatar.x, posicionFinalAvatar.y));
+            _Avatar.runAction(MoveTo.action(_Velocidad, posicionFinalAvatar.x, posicionFinalAvatar.y));
 
             Log.d("Poner Jugador", "Lo agrego a la capa");
             arrayAvatar.add(_Avatar);
@@ -286,11 +312,10 @@ public class Juego {
        }
 
         void PonerPuntos() {
-            _Puntos = Label.label("" + puntos, "", 100);
+            _Puntos = Label.label("Puntos" + puntos, "", 100);
             _Puntos.setPosition(_Pantalla.getWidth() / 2, _Pantalla.getHeight() - _Puntos.getHeight() / 2);
             CCColor3B colorPuntos;
             colorPuntos = new CCColor3B(255, 255, 255);
-            Log.d("puntos", "Tenes " + puntos + " puntos y " + _Puntos.toString());
             _Puntos.setColor(colorPuntos);
             super.addChild(_Puntos);
         }
@@ -387,20 +412,32 @@ public class Juego {
                     _Puntos.setString("" + puntos);
 
                     if(puntos > 10 ){
-                        _Timer = _Timer - 0.5f;
+                        _Timer = 1.5f;
+                        _Velocidad = 1.5f;
                         Log.d("Timer","puntos"+ puntos + _Timer.toString());
+                        Log.d("Timer","timer" + _Timer.toString());
+                        Log.d("Timer","velocidad" + _Velocidad.toString());
                     }
                     if(puntos > 15 ){
-                        _Timer = _Timer - 1;
+                        _Timer = 1f;
+                        _Velocidad = 1.0f;
                         Log.d("Timer","puntos"+ puntos + _Timer.toString());
+                        Log.d("Timer","timer" + _Timer.toString());
+                        Log.d("Timer","velocidad" + _Velocidad.toString());
                     }
                     if(puntos > 20 ){
-                        _Timer = _Timer - 1.5f;
+                        _Timer = 0.5f;
+                        _Velocidad = 0.5f;
                         Log.d("Timer","puntos"+ puntos + _Timer.toString());
+                        Log.d("Timer","timer" + _Timer.toString());
+                        Log.d("Timer","velocidad" + _Velocidad.toString());
                     }
-                    if(puntos > 35 ){
-                        _Timer = _Timer - 2;
-                        Log.d("Timer","puntos"+ puntos + _Timer.toString());
+                    if(puntos > 30 ){
+                        _Timer = 0.10f;
+                        _Velocidad = 0.35f;
+                        Log.d("Timer","puntos"+ puntos );
+                        Log.d("Timer","timer" + _Timer.toString());
+                        Log.d("Timer","velocidad" + _Velocidad.toString());
                     }
 
                     Log.d("Pos", "la posicion en x del avatar es en " + _Avatar.getPositionX());
